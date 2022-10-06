@@ -3,6 +3,8 @@ package lsf
 import (
 	"bytes"
 	"context"
+	"fmt"
+	"os"
 	"testing"
 
 	_ "github.com/rclone/rclone/backend/local"
@@ -82,6 +84,9 @@ func TestFormat(t *testing.T) {
 	fstest.Initialise()
 	f, err := fs.NewFs(context.Background(), "testfiles")
 	require.NoError(t, err)
+	root, err := os.Getwd()
+	require.NoError(t, err)
+	root += "/testfiles"
 
 	buf := new(bytes.Buffer)
 	format = "p"
@@ -92,6 +97,16 @@ file2
 file3
 subdir
 `, buf.String())
+
+	buf = new(bytes.Buffer)
+	format = "f"
+	err = Lsf(context.Background(), f, buf)
+	require.NoError(t, err)
+	assert.Equal(t, fmt.Sprintf(`%[1]s/file1
+%[1]s/file2
+%[1]s/file3
+%[1]s/subdir
+`, root), buf.String())
 
 	buf = new(bytes.Buffer)
 	format = "s"

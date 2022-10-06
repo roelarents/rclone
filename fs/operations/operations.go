@@ -2108,6 +2108,13 @@ func (l *ListFormat) AddPath() {
 	})
 }
 
+// AddFullPath adds absolute path to file to output
+func (l *ListFormat) AddFullPath() {
+	l.AppendOutput(func(entry *ListJSONItem) string {
+		return l.normalisePath(entry, entry.FullPath)
+	})
+}
+
 // AddEncrypted adds the encrypted path to file to output
 func (l *ListFormat) AddEncrypted() {
 	l.AppendOutput(func(entry *ListJSONItem) string {

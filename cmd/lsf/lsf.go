@@ -178,6 +178,8 @@ func Lsf(ctx context.Context, fsrc fs.Fs, out io.Writer) error {
 		switch char {
 		case 'p':
 			list.AddPath()
+		case 'f':
+			list.AddFullPath()
 		case 't':
 			list.AddModTime()
 			opt.NoModTime = false

@@ -17,6 +17,7 @@ import (
 // ListJSONItem in the struct which gets marshalled for each line
 type ListJSONItem struct {
 	Path          string
+	FullPath      string `json:",omitempty"`
 	Name          string
 	EncryptedPath string `json:",omitempty"`
 	Encrypted     string `json:",omitempty"`
@@ -177,6 +178,21 @@ func (lj *listJSON) entry(ctx context.Context, entry fs.DirEntry) (*ListJSONItem
 	if entry.Remote() == "" {
 		item.Name = ""
 	}
+
+	switch entry.(type) {
+	case fs.Directory:
+		// TODO make full path for dir
+	case fs.Object:
+		root := entry.(fs.Object).Fs().Root()
+		if root != "" {
+			item.FullPath = root + "/" + entry.Remote()
+		} else {
+			item.FullPath = entry.Remote()
+		}
+	default:
+		fs.Errorf(nil, "Unknown type %T in listing", entry)
+	}
+
 	if !lj.opt.NoModTime {
 		item.ModTime = Timestamp{When: entry.ModTime(ctx), Format: lj.format}
 	}
